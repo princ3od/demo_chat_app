@@ -52,12 +52,12 @@ class ChatController extends GetxController {
           tempChatGroup = FirestoreService.getChatGroupFromRaw(
               element.doc.id, element.doc.data());
           if (tempChatGroup.peopleID.length == 2 &&
-              ((mainUser.uid != partner.uid &&
-                      (tempChatGroup.peopleID[0] == partner.uid ||
-                          tempChatGroup.peopleID[1] == partner.uid)) ||
                   (mainUser.uid == partner.uid &&
-                      (tempChatGroup.peopleID[0] == partner.uid &&
-                          tempChatGroup.peopleID[1] == partner.uid)))) {
+                      tempChatGroup.peopleID[0] == tempChatGroup.peopleID[1] &&
+                      tempChatGroup.peopleID[1] == mainUser.uid) ||
+              ((mainUser.uid != partner.uid &&
+                  tempChatGroup.peopleID.contains(mainUser.uid) &&
+                  tempChatGroup.peopleID.contains(partner.uid)))) {
             print("start conversation");
             chatGroup = tempChatGroup;
             chatGroup.photoUrl = partner.photoUrl;
@@ -121,19 +121,21 @@ class ChatController extends GetxController {
     List<ChatGroup> chatGroups =
         await FirestoreService.instance.getChatGroups(mainUser.uid);
     for (var _chatGroup in chatGroups) {
-      if (_chatGroup.peopleID.length == 2 &&
-          ((mainUser.uid != partner.uid &&
-                  (_chatGroup.peopleID[0] == partner.uid ||
-                      _chatGroup.peopleID[1] == partner.uid)) ||
-              (mainUser.uid == partner.uid &&
-                  (_chatGroup.peopleID[0] == partner.uid &&
-                      _chatGroup.peopleID[1] == partner.uid)))) {
-        chatNewUser.value = false;
-        isLoading.value = false;
-        chatGroup = _chatGroup;
-        await getMessage();
-        startListenToChange();
-        return chatNewUser.value;
+      if (_chatGroup.peopleID.length == 2) {
+        if ((mainUser.uid == partner.uid &&
+                _chatGroup.peopleID[0] == _chatGroup.peopleID[1] &&
+                _chatGroup.peopleID[1] == mainUser.uid) ||
+            ((mainUser.uid != partner.uid &&
+                _chatGroup.peopleID.contains(mainUser.uid) &&
+                _chatGroup.peopleID.contains(partner.uid)))) {
+          print(_chatGroup.peopleID[0] + " " + _chatGroup.peopleID[1]);
+          chatNewUser.value = false;
+          isLoading.value = false;
+          chatGroup = _chatGroup;
+          await getMessage();
+          startListenToChange();
+          return chatNewUser.value;
+        }
       }
     }
 
