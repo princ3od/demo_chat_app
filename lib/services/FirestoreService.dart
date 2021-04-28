@@ -74,7 +74,6 @@ class FirestoreService {
       'name': "",
       'people': people,
     }).then((value) {
-      print("create group");
       chatGroup = ChatGroup(value.id, "", people);
     });
     return chatGroup;

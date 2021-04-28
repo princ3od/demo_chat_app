@@ -117,6 +117,7 @@ class HomeScreen extends StatelessWidget {
                                   _homeController.chatGroups[index],
                                   _homeController.user));
                             },
+                            onLongPress: () {},
                             style: ButtonStyle(
                                 shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
@@ -200,7 +201,7 @@ class HomeScreen extends StatelessWidget {
     return Row(
       children: [
         Flexible(
-          flex: 4,
+          flex: 3,
           child: Text(
             txt,
             overflow: TextOverflow.ellipsis,
@@ -212,7 +213,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         Flexible(
-          flex: 1,
+          flex: 2,
           child: Text(
             " - " + ChatController.getTime(message.timeStamp),
             overflow: TextOverflow.clip,

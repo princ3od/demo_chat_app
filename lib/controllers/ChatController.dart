@@ -27,14 +27,13 @@ class ChatController extends GetxController {
   StreamSubscription<QuerySnapshot> _eventsSubscription;
   StreamSubscription<QuerySnapshot> _listenChatGroup;
   void startListenToChange() {
-    int i = 1;
     if (!chatNewUser.value) {
       _eventsSubscription = MessageService.instance.database
           .collection('messages')
           .snapshots()
           .listen((event) {
         event.docChanges.forEach((element) {
-          if (element.doc.data()['groupId'] == chatGroup.id) getMessage(i++);
+          if (element.doc.data()['groupId'] == chatGroup.id) getMessage();
         });
       });
     }
@@ -47,17 +46,25 @@ class ChatController extends GetxController {
           .collection("groups")
           .snapshots()
           .listen((event) {
+        ChatGroup tempChatGroup;
         event.docChanges.forEach((element) async {
-          ChatGroup tempChatGroup = FirestoreService.getChatGroupFromRaw(
+          tempChatGroup = FirestoreService.getChatGroupFromRaw(
               element.doc.id, element.doc.data());
-          if (tempChatGroup.peopleID.contains(mainUser.uid)) {
+          if (tempChatGroup.peopleID.length == 2 &&
+              ((mainUser.uid != partner.uid &&
+                      (tempChatGroup.peopleID[0] == partner.uid ||
+                          tempChatGroup.peopleID[1] == partner.uid)) ||
+                  (mainUser.uid == partner.uid &&
+                      (tempChatGroup.peopleID[0] == partner.uid &&
+                          tempChatGroup.peopleID[1] == partner.uid)))) {
             print("start conversation");
             chatGroup = tempChatGroup;
             chatGroup.photoUrl = partner.photoUrl;
             chatGroup.name = partner.displayName;
             chatNewUser.value = false;
             _listenChatGroup.cancel();
-            if (_eventsSubscription.isBlank) startListenToChange();
+            if (_eventsSubscription == null || _eventsSubscription.isBlank)
+              startListenToChange();
           }
         });
       });
@@ -73,15 +80,20 @@ class ChatController extends GetxController {
         DateTime.now().millisecondsSinceEpoch,
         type);
     mainTextController.clear();
-    if (message.groupID == "" || message.groupID == null) {
+    if (message.groupID == null || message.groupID == "") {
       chatGroup = await FirestoreService.instance
           .createChatGroup([mainUser.uid, partner.uid]);
+      print("create group");
+      if (_listenChatGroup != null && !_listenChatGroup.isBlank)
+        _listenChatGroup.cancel();
       chatGroup.photoUrl = partner.photoUrl;
       chatGroup.name = partner.displayName;
       //print(chatGroup.id);
       message.groupID = chatGroup.id;
       chatNewUser.value = false;
-      if (_eventsSubscription.isBlank) startListenToChange();
+      if (_eventsSubscription == null || _eventsSubscription.isBlank) {
+        startListenToChange();
+      }
     }
     await MessageService.instance.sendMessage(message);
     if (scrollController.hasClients)
@@ -92,7 +104,7 @@ class ChatController extends GetxController {
       );
   }
 
-  Future getMessage([int index]) async {
+  Future getMessage() async {
     messages.value = await MessageService.instance.getMessages(chatGroup);
     isLoading.value = false;
     if (scrollController.hasClients)
@@ -108,22 +120,23 @@ class ChatController extends GetxController {
     List<ChatGroup> chatGroups =
         await FirestoreService.instance.getChatGroups(mainUser.uid);
     for (var _chatGroup in chatGroups) {
-      if (_chatGroup.peopleID.length == 2) {
-        if ((mainUser.uid != partner.uid &&
-                (_chatGroup.peopleID[0] == partner.uid ||
-                    _chatGroup.peopleID[1] == partner.uid)) ||
-            (mainUser.uid == partner.uid &&
-                (_chatGroup.peopleID[0] == partner.uid &&
-                    _chatGroup.peopleID[1] == partner.uid))) {
-          chatNewUser.value = false;
-          isLoading.value = false;
-          chatGroup = _chatGroup;
-          await getMessage();
-          startListenToChange();
-          return chatNewUser.value;
-        }
+      if (_chatGroup.peopleID.length == 2 &&
+          ((mainUser.uid != partner.uid &&
+                  (_chatGroup.peopleID[0] == partner.uid ||
+                      _chatGroup.peopleID[1] == partner.uid)) ||
+              (mainUser.uid == partner.uid &&
+                  (_chatGroup.peopleID[0] == partner.uid &&
+                      _chatGroup.peopleID[1] == partner.uid)))) {
+        chatNewUser.value = false;
+        isLoading.value = false;
+        chatGroup = _chatGroup;
+        await getMessage();
+        startListenToChange();
+        return chatNewUser.value;
       }
     }
+
+    print("new user");
     chatNewUser.value = true;
     startListenStartConversation();
     isLoading.value = false;
@@ -162,11 +175,14 @@ class ChatController extends GetxController {
     if (message.groupID == "" || message.groupID == null) {
       chatGroup = await FirestoreService.instance
           .createChatGroup([mainUser.uid, partner.uid]);
+      if (_listenChatGroup != null && !_listenChatGroup.isBlank)
+        _listenChatGroup.cancel();
       chatGroup.photoUrl = partner.photoUrl;
       chatGroup.name = partner.displayName;
       message.groupID = chatGroup.id;
       chatNewUser.value = false;
-      if (_eventsSubscription.isBlank) startListenToChange();
+      if (_eventsSubscription == null && _eventsSubscription.isBlank)
+        startListenToChange();
     }
     await MessageService.instance.sendMessage(message);
     scrollController.animateTo(
@@ -221,8 +237,10 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
-    if (!_eventsSubscription.isBlank) _eventsSubscription.cancel();
-    if (!_listenChatGroup.isBlank) _listenChatGroup.cancel();
+    if (_eventsSubscription != null && !_eventsSubscription.isBlank)
+      _eventsSubscription.cancel();
+    if (_listenChatGroup != null && !_listenChatGroup.isBlank)
+      _listenChatGroup.cancel();
     scrollController.dispose();
     super.onClose();
   }
