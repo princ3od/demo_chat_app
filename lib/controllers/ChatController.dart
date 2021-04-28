@@ -28,6 +28,7 @@ class ChatController extends GetxController {
   StreamSubscription<QuerySnapshot> _listenChatGroup;
   void startListenToChange() {
     if (!chatNewUser.value) {
+      print("start listen msg");
       _eventsSubscription = MessageService.instance.database
           .collection('messages')
           .snapshots()
