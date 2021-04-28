@@ -17,6 +17,7 @@ class ChatScreen extends StatelessWidget {
   }
   ChatScreen.chatWithUser(ChatUser partner, ChatUser mainUser) {
     _chatController.partner = partner;
+    print(partner.displayName);
     _chatController.mainUser = mainUser;
     _chatController.isNewChatUser();
   }
@@ -52,7 +53,10 @@ class ChatScreen extends StatelessWidget {
                       },
                     ),
                     Text(_chatController.chatNewUser.value
-                        ? _chatController.partner.displayName
+                        ? _chatController.partner.uid ==
+                                _chatController.mainUser.uid
+                            ? "You"
+                            : _chatController.partner.displayName
                         : _chatController.chatGroup.name),
                   ],
                 ),

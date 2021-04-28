@@ -29,7 +29,8 @@ class HomeController extends GetxController {
   }
 
   void startListenToChange() {
-    if (_listenChatGroup.isBlank)
+    if (_listenChatGroup == null || _listenChatGroup.isBlank) {
+      print("listen chat gr");
       _listenChatGroup = FirestoreService.instance.database
           .collection("groups")
           .snapshots()
@@ -38,7 +39,9 @@ class HomeController extends GetxController {
           await getChatGroup();
         });
       });
-    if (_listenLastMess.isBlank)
+    }
+    if (_listenLastMess == null || _listenLastMess.isBlank) {
+      print("listen last mess");
       _listenLastMess = MessageService.instance.database
           .collection('messages')
           .snapshots()
@@ -56,12 +59,13 @@ class HomeController extends GetxController {
           }
         });
       });
+    }
   }
 
   @override
   void onClose() {
-    _listenChatGroup.cancel();
-    _listenLastMess.cancel();
+    // _listenChatGroup.cancel();
+    // _listenLastMess.cancel();
     super.onClose();
   }
 }

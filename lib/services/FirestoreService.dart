@@ -74,7 +74,6 @@ class FirestoreService {
       'name': "",
       'people': people,
     }).then((value) {
-      print("create group");
       chatGroup = ChatGroup(value.id, "", people);
     });
     return chatGroup;
@@ -94,6 +93,7 @@ class FirestoreService {
       String user1 = element.peopleID[0], user2 = element.peopleID[1];
       if (user1 == user2) {
         user = await FirestoreService.instance.getUser(user1);
+        element.name = "You";
       } else {
         if (user1 != userUID) {
           user = await FirestoreService.instance.getUser(user1);

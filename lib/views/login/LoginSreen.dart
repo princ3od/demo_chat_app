@@ -2,6 +2,7 @@ import 'package:demo_chat_app/controllers/AuthenticController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthenticController _authenticController =
@@ -37,7 +38,11 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Image.asset("assets/images/bg.png"),
+                          //Image.asset("assets/images/bg.png"),
+                          Padding(
+                            padding: const EdgeInsets.all(30.0),
+                            child: Lottie.asset("assets/images/prm.json"),
+                          ),
                           buildSignIn(),
                         ],
                       ),
@@ -69,7 +74,10 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Image.asset("assets/images/bg.png"),
+                        Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Lottie.asset("assets/images/prm.json"),
+                        ),
                         CircularProgressIndicator(),
                         SizedBox(height: 20),
                         Text("Initilizing..."),
