@@ -150,20 +150,17 @@ class HomeScreen extends StatelessWidget {
                               fontSize: 15,
                             ),
                           ),
-                          leading: Hero(
-                            tag: "avatar ${_homeController.people[index].uid}",
-                            child: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      _homeController.people[index].photoUrl,
-                                  placeholder: (context, url) =>
-                                      CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                ),
+                          leading: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    _homeController.people[index].photoUrl,
+                                placeholder: (context, url) =>
+                                    CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
                               ),
                             ),
                           ),

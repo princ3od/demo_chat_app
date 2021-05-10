@@ -30,6 +30,14 @@ class LoginScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
+                            child: SizedBox(
+                                height: 40,
+                                width: 40,
+                                child:
+                                    Image.asset("assets/images/messenger.png")),
+                          ),
+                          SizedBox(height: 20),
+                          Center(
                             child: Text(
                               "Demo Chat App",
                               style: TextStyle(
@@ -65,6 +73,14 @@ class LoginScreen extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Center(
+                          child: SizedBox(
+                              height: 40,
+                              width: 40,
+                              child:
+                                  Image.asset("assets/images/messenger.png")),
+                        ),
+                        SizedBox(height: 20),
                         Center(
                           child: Text(
                             "Demo Chat App",

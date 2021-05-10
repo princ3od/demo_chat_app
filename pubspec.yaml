@@ -44,7 +44,8 @@ dependencies:
   intl: ^0.17.0
   lottie: ^1.0.1
   flutter_launcher_icons: ^0.9.0
-  
+  flutter_native_splash: ^1.1.8+4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -93,3 +94,6 @@ flutter_icons:
     android: true
     ios: true
     image_path: "assets/images/messenger.png"
+flutter_native_splash:
+  color: "ffffff"
+  image: "assets/images/messenger.png"
