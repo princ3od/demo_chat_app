@@ -64,8 +64,8 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
-    // _listenChatGroup.cancel();
-    // _listenLastMess.cancel();
+    _listenChatGroup.cancel();
+    _listenLastMess.cancel();
     super.onClose();
   }
 }

@@ -8,14 +8,18 @@ class MessageService {
 
   final FirebaseFirestore database = FirebaseFirestore.instance;
 
-  Future sendMessage(Message message) async {
+  Future<bool> sendMessage(Message message) async {
     await database.collection('messages').doc().set({
       'content': message.content,
       'groupId': message.groupID,
       'senderUid': message.senderUID,
       'timeStamp': message.timeStamp,
       'type': message.type,
+    }).onError((_, __) {
+      print("error");
+      return false;
     });
+    return true;
   }
 
   Message _getMessageFromRaw(Map<String, dynamic> result) {

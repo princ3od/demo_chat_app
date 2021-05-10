@@ -39,7 +39,13 @@ class HomeScreen extends StatelessWidget {
                 items: [
                   PopupMenuItem<String>(
                     child: TextButton(
-                      child: Text('Logout'),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Icon(Icons.logout),
+                          Text('Logout'),
+                        ],
+                      ),
                       onPressed: () {
                         if (_homeController.signInType == 1)
                           Get.put(AuthenticController()).signOutGoogle();
@@ -83,30 +89,35 @@ class HomeScreen extends StatelessWidget {
                               subtitle: lastMessage(
                                   _homeController.chatGroups[index].lastMessage,
                                   index),
-                              leading: SizedBox(
-                                child: (_homeController
-                                                .chatGroups[index].photoUrl !=
-                                            null &&
-                                        _homeController
-                                                .chatGroups[index].photoUrl !=
-                                            "")
-                                    ? ClipOval(
-                                        child: CachedNetworkImage(
-                                          imageUrl: _homeController
-                                              .chatGroups[index].photoUrl,
-                                          placeholder: (context, url) =>
-                                              CircularProgressIndicator(),
-                                          errorWidget: (context, url, error) =>
-                                              Icon(Icons.error),
+                              leading: Hero(
+                                tag:
+                                    "avatar ${_homeController.chatGroups[index].id}",
+                                child: SizedBox(
+                                  child: (_homeController
+                                                  .chatGroups[index].photoUrl !=
+                                              null &&
+                                          _homeController
+                                                  .chatGroups[index].photoUrl !=
+                                              "")
+                                      ? ClipOval(
+                                          child: CachedNetworkImage(
+                                            imageUrl: _homeController
+                                                .chatGroups[index].photoUrl,
+                                            placeholder: (context, url) =>
+                                                CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.photo,
+                                          size: 45,
+                                          color: Colors.grey,
                                         ),
-                                      )
-                                    : Icon(
-                                        Icons.photo,
-                                        size: 45,
-                                        color: Colors.grey,
-                                      ),
-                                width: 40,
-                                height: 40,
+                                  width: 40,
+                                  height: 40,
+                                ),
                               ),
                             ),
                             onPressed: () {
@@ -139,17 +150,20 @@ class HomeScreen extends StatelessWidget {
                               fontSize: 15,
                             ),
                           ),
-                          leading: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl:
-                                    _homeController.people[index].photoUrl,
-                                placeholder: (context, url) =>
-                                    CircularProgressIndicator(),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
+                          leading: Hero(
+                            tag: "avatar ${_homeController.people[index].uid}",
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      _homeController.people[index].photoUrl,
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
                               ),
                             ),
                           ),
@@ -179,7 +193,54 @@ class HomeScreen extends StatelessWidget {
           },
           items: [
             BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chats"),
-            BottomNavigationBarItem(icon: Icon(Icons.people), label: "People"),
+            BottomNavigationBarItem(
+                icon: Stack(
+                  children: [
+                    Icon(
+                      Icons.people,
+                      size: 32,
+                    ),
+                    new Positioned(
+                      right: 0.0,
+                      top: 1.0,
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: new BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 15,
+                              minHeight: 15,
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(1),
+                            decoration: new BoxDecoration(
+                              color: Colors.green.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                            child: new Text(
+                              _homeController.people.length.toString(),
+                              style: new TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green,
+                                fontSize: 9,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                label: "People"),
           ],
         ),
       ),

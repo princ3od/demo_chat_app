@@ -34,7 +34,10 @@ class ChatController extends GetxController {
           .snapshots()
           .listen((event) {
         event.docChanges.forEach((element) {
-          if (element.doc.data()['groupId'] == chatGroup.id) getMessage();
+          if (element.doc.data()['groupId'] == chatGroup.id &&
+              element.doc.data()['senderUid'] == mainUser.uid) {
+            getMessage();
+          }
         });
       });
     }
@@ -72,7 +75,7 @@ class ChatController extends GetxController {
     }
   }
 
-  Future sendMessage(int type) async {
+  sendMessage(int type) async {
     if (mainTextController.isBlank) return;
     Message message = Message(
         mainUser.uid,
@@ -89,14 +92,13 @@ class ChatController extends GetxController {
         _listenChatGroup.cancel();
       chatGroup.photoUrl = partner.photoUrl;
       chatGroup.name = partner.displayName;
-      //print(chatGroup.id);
       message.groupID = chatGroup.id;
       chatNewUser.value = false;
       if (_eventsSubscription == null || _eventsSubscription.isBlank) {
         startListenToChange();
       }
     }
-    await MessageService.instance.sendMessage(message);
+    bool sent = await MessageService.instance.sendMessage(message);
     if (scrollController.hasClients)
       scrollController.animateTo(
         0.0,
@@ -138,8 +140,6 @@ class ChatController extends GetxController {
         }
       }
     }
-
-    print("new user");
     chatNewUser.value = true;
     startListenStartConversation();
     isLoading.value = false;

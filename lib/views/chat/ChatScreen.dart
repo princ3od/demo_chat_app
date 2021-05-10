@@ -33,18 +33,23 @@ class ChatScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      icon: SizedBox(
-                        width: 45,
-                        height: 45,
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: _chatController.chatNewUser.value
-                                ? _chatController.partner.photoUrl
-                                : _chatController.chatGroup.photoUrl,
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator(),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
+                      icon: Hero(
+                        tag: _chatController.chatNewUser.value
+                            ? "avatar ${_chatController.partner.uid}"
+                            : "avatar ${_chatController.chatGroup.id}",
+                        child: SizedBox(
+                          width: 45,
+                          height: 45,
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: _chatController.chatNewUser.value
+                                  ? _chatController.partner.photoUrl
+                                  : _chatController.chatGroup.photoUrl,
+                              placeholder: (context, url) =>
+                                  CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                            ),
                           ),
                         ),
                       ),
